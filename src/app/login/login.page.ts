@@ -1,5 +1,4 @@
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { ToastController, LoadingController } from '@ionic/angular';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -19,21 +18,13 @@ export class LoginPage {
   constructor(
     private auth: AuthService,
     private afAuth: AngularFireAuth, 
-    private toastController: ToastController, 
-    private loadingController: LoadingController, 
     private router: Router,
     private setHome: HomePage
   ) {}
 
-  async getIdUser() {
-     return await this.userId;
-  }
-
   // Função de login
   async login() {
-    const loading = await this.loadingController.create({
-      message: 'Carregando...',
-    });
+    const loading = await this.auth.loading()
     await loading.present();
 
     try {
@@ -44,12 +35,12 @@ export class LoginPage {
       // Obtém o UID do usuário
       this.userId = await userCredential.user?.uid || 'FALHA';
       if(this.userId == 'FALHA') {
-        this.showToast('Falha na conexão, conecte-se novamente a conta');
+        this.auth.showToast('Falha na conexão, conecte-se novamente a conta');
       }
       await this.auth.setUserID(this.userId);
       console.log('UID do usuário:', this.userId);
 
-      this.showToast('Login bem sucedido'); 
+      this.auth.showToast('Login bem sucedido'); 
 
       //Associa o ID do usuário na interface da aplicação
       await this.setHome.getUserId();
@@ -61,24 +52,16 @@ export class LoginPage {
 
     } catch (error) {
       await loading.dismiss();  
-      this.showToast('E-mail ou senha incorretos.'); 
+      this.auth.showToast('E-mail ou senha incorretos.'); 
     }
   }
 
    // Função pra logout
    async logout() {
     await this.afAuth.signOut();
-    this.showToast('Desconectado com sucesso!');
+    this.auth.showToast('Desconectado com sucesso!');
 
     // Redireciona pra a tela de login
     this.router.navigate(['/login']);
-  }
-
-  async showToast(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000
-    });
-    toast.present();
   }
 }

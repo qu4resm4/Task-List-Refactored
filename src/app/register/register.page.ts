@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -16,33 +17,24 @@ export class RegisterPage {
     private afAuth: AngularFireAuth,
     private router: Router,
     private toastController: ToastController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private auth: AuthService
   ) {}
 
   async register() {
-    const loading = await this.loadingController.create({
-      message: 'Registrando...',
-    });
+    const loading = await this.auth.loading();
     await loading.present();
 
     try {
-      const user = await this.afAuth.createUserWithEmailAndPassword(this.email, this.password);
+      await this.afAuth.createUserWithEmailAndPassword(this.email, this.password);
       await loading.dismiss();
-      this.showToast('Cadastro efetuado com sucesso!');
+      this.auth.showToast('Cadastro efetuado com sucesso!');
       
       // Redireciona pro login
       this.router.navigate(['/login']);
     } catch (error) {
       await loading.dismiss();
-      this.showToast('Erro no cadastro. Utilize caracteres maiúsculos, minúsculos, especiais e numéricos.');
+      this.auth.showToast('Erro na conexão.');
     }
-  }
-
-  async showToast(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000
-    });
-    toast.present();
   }
 }

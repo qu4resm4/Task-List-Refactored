@@ -13,7 +13,7 @@
   <ion-item>
     <ion-textarea placeholder="Digite sua nova tarefa..." [(ngModel)]="inputTarefa"></ion-textarea>
   </ion-item>
-  <ion-button id="btnC" expand="block" (click)="tarefaEmEdicao ? salvarEdicao() : criarTarefa()">
+  <ion-button id="btnC" expand="block" (click)="salvarTarefa()">
     {{tarefaEmEdicao ? "Editar Tarefa" : "Criar Tarefa"}}
   </ion-button>
 

@@ -29,16 +29,27 @@ export class HomePage {
   }
 
   // Função para criar uma nova tarefa
-  async criarTarefa() {
+  async salvarTarefa() {
     if (this.inputTarefa.trim()) {
-      const idTarefa = uuidv4();
+      if(this.tarefaEmEdicao != null) {
+        // se estiver em edição
+        var idTarefa: any = this.tarefaEmEdicao.id
+      } else {
+        // se não estiver em edição
+        var idTarefa: any = uuidv4();
+      }
+  
       const task = {
         name: this.inputTarefa,
         activate: true
       };
 
-      await this.db.addTarefa(this.idUser || '', idTarefa, task);
+      await this.db.salvarTarefa(this.idUser || '', idTarefa, task);
       this.inputTarefa = '';
+      //se estiver em edição, finaliza edição (isso torna o método salvarEdição desnecessário)
+      if(this.tarefaEmEdicao != null) {
+        this.tarefaEmEdicao = null;
+      }
       this.exibirTarefas();
     }
   }
@@ -47,22 +58,6 @@ export class HomePage {
   editarTarefa(tarefa: any) {
     this.tarefaEmEdicao = tarefa;
     this.inputTarefa = tarefa.name;
-  }
-
-  // Função para salvar as edições feitas em uma tarefa
-  async salvarEdicao() {
-    if (this.inputTarefa.trim()) {
-      const id = this.tarefaEmEdicao.id;
-      const task = {
-        name: this.inputTarefa,
-        activate: this.tarefaEmEdicao.activate,
-      };
-
-      await this.db.updateTarefa(this.idUser || '', id, task);
-      this.inputTarefa = '';
-      this.tarefaEmEdicao = null;
-      this.exibirTarefas();
-    }
   }
 
   // Função para excluir uma tarefa
@@ -88,7 +83,7 @@ export class HomePage {
 
   // Função inicial para exibir as tarefas ao carregar a página
   ngOnInit() {
-    if(this.authService.getUserID() == null){
+    if(this.getUserId() == null){
       this.router.navigate(['/login']); 
     }
     this.init();
