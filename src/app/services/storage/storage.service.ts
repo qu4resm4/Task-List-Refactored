@@ -29,8 +29,6 @@ export class StorageService {
       await this.storage?.set(userID, tarefas);  // Armazena o objeto atualizado
   }
 
-
-
   // Read - Obtém todas as tarefas de um usuário
   async getTarefas(userID: string): Promise<{ id: string; name: string; activate: boolean }[]> {
     let tarefas: Tarefas = await this.storage?.get(userID) || {};  // Obtém as tarefas do usuário ou um objeto vazio

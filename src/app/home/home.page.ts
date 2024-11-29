@@ -35,7 +35,7 @@ export class HomePage {
         // se estiver em edição
         var idTarefa: any = this.tarefaEmEdicao.id
       } else {
-        // se não estiver em edição
+        // se estiver em criação
         var idTarefa: any = uuidv4();
       }
   
